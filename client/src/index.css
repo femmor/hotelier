@@ -1,0 +1,8 @@
+a.nav-link:hover { 
+  cursor: pointer;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #0C58CA;
+  color: #fff;
+}
