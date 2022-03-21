@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import DashboardNav from "../components/DashboardNav";
 import ConnectNav from "../components/ConnectNav";
@@ -9,12 +9,28 @@ import {
   DollarOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import { createConnectAccount } from "../actions/stripe";
+import { toast } from "react-toastify";
 
 const SellerDashboard = () => {
   const { auth } = useSelector(state => ({ ...state }));
   const { user } = auth;
 
-  const handleStripe = () => {};
+  const [loading, setLoading] = useState(false);
+
+  const handleStripe = async () => {
+    setLoading(true);
+    try {
+      const res = await createConnectAccount(auth.token);
+      console.log(res); // get login link
+      setLoading(false);
+    } catch (error) {
+      toast.error("Stripe connection failed, please try again!", {
+        theme: "colored",
+      });
+      setLoading(false);
+    }
+  };
 
   const connected = () => {
     return (
@@ -46,9 +62,13 @@ const SellerDashboard = () => {
             <p className="lead">
               We partner with stripe to transfer earnings to your bank account.
             </p>
-            <button className="btn btn-primary mb-3" onClick={handleStripe}>
+            <button
+              disabled={loading}
+              className="btn btn-primary mb-3"
+              onClick={handleStripe}
+            >
               <div className="d-flex align-items-center gap-2">
-                Setup Payouts <DollarOutlined />
+                {loading ? "Processing..." : `Setup Payouts`}
               </div>
             </button>
             <p className="text-muted">
