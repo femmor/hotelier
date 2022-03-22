@@ -35,7 +35,6 @@ export const createConnectAccount = async (req, res) => {
 
   // Generate link and send to frontend
   const link = `${accountLink.url}?${queryString.stringify(accountLink)}`;
-  console.log(link);
   res.send(link);
 
   // Update payment schedule (Optional. default is 2days)
