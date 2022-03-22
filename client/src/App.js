@@ -15,6 +15,7 @@ import TopNav from "./components/TopNav";
 import Dashboard from "./user/Dashboard";
 import SellerDashboard from "./user/SellerDashboard";
 import NewHotel from "./hotels/NewHotel";
+import StripeCallback from "./stripe/StripeCallback";
 
 const App = () => {
   return (
@@ -37,6 +38,11 @@ const App = () => {
           component={SellerDashboard}
         />
         <PrivateRoute exact path="/hotels/create" component={NewHotel} />
+        <PrivateRoute
+          exact
+          path="/stripe/callback"
+          component={StripeCallback}
+        />
         <Route exact path="/" component={Home} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
