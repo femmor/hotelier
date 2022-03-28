@@ -7,7 +7,7 @@ const stripe = Stripe(process.env.STRIPE_SECRET);
 
 export const createConnectAccount = async (req, res) => {
   // Find user from db
-  const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user._id).exec();
 
   // If user don't have stripe_account_id, create one
   if (!user.stripe_account_id) {
@@ -38,4 +38,25 @@ export const createConnectAccount = async (req, res) => {
   res.send(link);
 
   // Update payment schedule (Optional. default is 2days)
+};
+
+export const getAccountStatus = async (req, res) => {
+  // Find user from db
+  const user = await User.findById(req.user._id).exec();
+
+  // Get account status
+  const account = await stripe.accounts.retrieve(user.stripe_account_id);
+
+  // Find the user and update the user account status
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
+    {
+      stripe_seller: account,
+    },
+    { new: true }
+  )
+    .select("-password")
+    .exec();
+  // Send the updated user to frontend
+  res.json(updatedUser);
 };
