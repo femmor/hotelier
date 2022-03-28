@@ -40,6 +40,20 @@ export const createConnectAccount = async (req, res) => {
   // Update payment schedule (Optional. default is 2days)
 };
 
+// Update stripe payout delay days
+const updatePayoutDelay = async accountId => {
+  const account = await stripe.accounts.update(accountId, {
+    settings: {
+      payouts: {
+        schedule: {
+          delay_days: 7,
+        },
+      },
+    },
+  });
+  return account;
+};
+
 export const getAccountStatus = async (req, res) => {
   // Find user from db
   const user = await User.findById(req.user._id).exec();
@@ -47,11 +61,14 @@ export const getAccountStatus = async (req, res) => {
   // Get account status
   const account = await stripe.accounts.retrieve(user.stripe_account_id);
 
+  // Update payout delay days
+  const updatedAccount = await updatePayoutDelay(user.stripe_account_id);
+
   // Find the user and update the user account status
   const updatedUser = await User.findByIdAndUpdate(
     user._id,
     {
-      stripe_seller: account,
+      stripe_seller: updatedAccount,
     },
     { new: true }
   )
