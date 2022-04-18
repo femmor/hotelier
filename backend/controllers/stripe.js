@@ -62,7 +62,7 @@ export const getAccountStatus = async (req, res) => {
   const account = await stripe.accounts.retrieve(user.stripe_account_id);
 
   // Update payout delay days
-  const updatedAccount = await updatePayoutDelay(user.stripe_account_id);
+  const updatedAccount = await updatePayoutDelay(account.id);
 
   // Find the user and update the user account status
   const updatedUser = await User.findByIdAndUpdate(
@@ -84,10 +84,29 @@ export const getAccountBalance = async (req, res) => {
 
   try {
     const balance = await stripe.balance.retrieve({
-      stripe_account: user.stripe_account_id,
+      stripeAccount: user.stripe_account_id,
     });
     res.json(balance);
   } catch (error) {
     console.log(error);
+  }
+};
+
+// Get payout settings
+
+export const payoutSettings = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).exec();
+
+    const loginLink = await stripe.accounts.createLoginLink(
+      user.stripe_account_id,
+      {
+        redirect_url: process.env.STRIPE_SETTING_REDIRECT_URL,
+      }
+    );
+    // console.log("LOGIN LINK FOR PAYOUT SETTING", loginLink);
+    res.json(loginLink);
+  } catch (err) {
+    console.log("STRIPE PAYOUT SETTING ERR ", err);
   }
 };

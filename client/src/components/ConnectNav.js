@@ -1,16 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Card, Avatar, Badge } from "antd";
+import { SettingOutlined } from "@ant-design/icons";
 import moment from "moment";
-import { getAccountBalance, currencyFormatter } from "../actions/stripe";
+import { toast } from "react-toastify";
+import {
+  getAccountBalance,
+  payoutSettings,
+  currencyFormatter,
+} from "../actions/stripe";
 
 const { Meta } = Card;
 const { Ribbon } = Badge;
 
 const ConnectNav = () => {
   const [balance, setBalance] = useState(0);
+  const [loading, setLoading] = useState(false);
   const { auth } = useSelector(state => ({ ...state }));
   const { user, token } = auth;
+
+  const handlePayoutSettings = async () => {
+    setLoading(true);
+    try {
+      const res = await payoutSettings(token);
+      window.location.href = res.data.url;
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+      toast("Unable to access settings, please try again", {
+        type: "error",
+      });
+    }
+  };
 
   useEffect(() => {
     getAccountBalance(token).then(res => {
@@ -44,7 +66,15 @@ const ConnectNav = () => {
               </Card>
             </Ribbon>
 
-            <div>Payout Settings</div>
+            <Ribbon text="Payouts" color="silver">
+              <Card
+                hoverable
+                onClick={handlePayoutSettings}
+                className="bg-light"
+              >
+                <SettingOutlined className="h5 pt-2" />
+              </Card>
+            </Ribbon>
           </>
         )}
     </div>
