@@ -15,6 +15,9 @@ const NewHotel = () => {
     to: "",
     bed: "",
   });
+  const [preview, setPreview] = useState(
+    "https://via.placeholder.com/300x300?text=PREVIEW"
+  );
 
   const { title, content, location, image, price, from, to, bed } = values;
 
@@ -29,10 +32,11 @@ const NewHotel = () => {
   };
 
   const handleImageChange = e => {
-    const image = e.target.files[0];
+    // console.log(e.target.files[0].name);
+    setPreview(URL.createObjectURL(e.target.files[0]));
     setValues({
       ...values,
-      image,
+      image: e.target.files[0],
     });
   };
 
@@ -50,12 +54,45 @@ const NewHotel = () => {
             type="file"
             className="form-control"
             name="image"
-            value={image}
             onChange={handleImageChange}
             accept="image/*"
           />
         </label>
+
+        <input
+          type="text"
+          name="title"
+          onChange={handleChange}
+          placeholder="Title"
+          className="form-control m-2"
+          value={title}
+        />
+        <textarea
+          name="content"
+          onChange={handleChange}
+          placeholder="Content"
+          className="form-control m-2"
+          value={content}
+        />
+        <input
+          type="number"
+          name="price"
+          onChange={handleChange}
+          placeholder="Price"
+          className="form-control m-2"
+          value={price}
+        />
+        <input
+          type="number"
+          name="bed"
+          onChange={handleChange}
+          placeholder="Bed"
+          className="form-control m-2"
+          value={bed}
+        />
       </div>
+
+      <button className="btn btn-outline-primary m-2">Save</button>
     </form>
   );
 
@@ -71,7 +108,11 @@ const NewHotel = () => {
             {hotelForm()}
           </div>
           <div className="col-md-3">
-            {image && <img src={image} alt="listing" />}
+            <img
+              src={preview}
+              alt="preview_image"
+              className="img img-fluid m-2"
+            />
           </div>
         </div>
       </div>
